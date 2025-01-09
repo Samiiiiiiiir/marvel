@@ -5,8 +5,4 @@ import './style/style.scss';
 
 const root = createRoot(document.getElementById('root'));
 
-root.render(
-    <StrictMode>
-        <App />
-    </StrictMode>
-);
+root.render(<App />);
