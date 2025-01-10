@@ -4,8 +4,6 @@ import MarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
-import nextId from "react-id-generator";
-
 import './charList.scss';
 
 class CharList extends Component {
@@ -17,12 +15,7 @@ class CharList extends Component {
     marvelService = new MarvelService();
 
     componentDidMount = () => {
-        this.updateCharacters()
-    }
-
-    updateCharacters = () => {
-        this.marvelService
-            .getAllCharacters()
+        this.marvelService.getAllCharacters()
             .then(this.onCharactersLoaded)
             .catch(this.onError)
     }
@@ -36,13 +29,13 @@ class CharList extends Component {
     }
 
     renderList = (arr) => {
-        const elements = arr.map(({thumbnail, name}) => {
-            let styles = {objectFit: 'cover'}
+        const elements = arr.map(({thumbnail, name, id}) => {
+            let styles = { objectFit: 'cover' };
             if (thumbnail == 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
                 styles = { objectFit: 'contain' };
             }
             return (
-                <li className="char__item" key={nextId()}>
+                <li onClick={() => this.props.onCharSelected(id)} className="char__item" key={id}>
                     <img src={thumbnail} alt="abyss" style={styles} />
                     <div className="char__name">{name}</div>
                 </li>
