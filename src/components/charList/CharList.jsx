@@ -4,24 +4,51 @@ import MarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
+import PropTypes from 'prop-types';
+
 import './charList.scss';
 
 class CharList extends Component {
     state = {
         data: [],
         status: 'loading',
+        newItemLoading: false,
+        offset: 1500,
+        charEnded: false
     }
 
     marvelService = new MarvelService();
 
     componentDidMount = () => {
-        this.marvelService.getAllCharacters()
+        this.onRequest();
+    }
+
+    onRequest = (offset) => {
+        this.onCharListLoading()
+        this.marvelService.getAllCharacters(offset)
             .then(this.onCharactersLoaded)
             .catch(this.onError)
     }
 
-    onCharactersLoaded = (arr) => {
-        this.setState({data: arr, status: 'loaded'})
+    onCharListLoading = () => {
+        this.setState({newItemLoading: true})
+    }
+
+    onCharactersLoaded = (newData) => {
+        let isEnded = false;
+        if (newData.length < 9) {
+            isEnded = true;
+        }
+
+        this.setState(({data, offset}) => {
+            return {
+                data: [...data, ...newData],
+                status: 'loaded',
+                newItemLoading: false,
+                offset: offset + 9,
+                charEnded: isEnded,
+            }
+        })
     }
 
     onError = () => {
@@ -49,7 +76,7 @@ class CharList extends Component {
     }
 
     render() {
-        const { data, status } = this.state;
+        const { data, status, newItemLoading, offset, charEnded } = this.state;
 
         let elem;
 
@@ -68,7 +95,12 @@ class CharList extends Component {
         return (
             <div className="char__list">
                 {elem}
-                <button className="button button__main button__long">
+                <button
+                    onClick={() => this.onRequest(offset)}
+                    className="button button__main button__long"
+                    disabled={newItemLoading}
+                    style={{'display': charEnded ? 'none' : 'block'}}
+                >
                     <div className="inner">load more</div>
                 </button>
             </div>
@@ -77,3 +109,7 @@ class CharList extends Component {
 }
 
 export default CharList;
+
+CharList.propTypes = {
+    onCharSelected: PropTypes.func
+}

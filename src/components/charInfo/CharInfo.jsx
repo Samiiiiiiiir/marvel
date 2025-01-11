@@ -7,6 +7,8 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
 import MarvelService from '../../services/MarvelService';
 
+import PropTypes from 'prop-types';
+
 class CharInfo extends Component {
     state = {
         char: {},
@@ -71,6 +73,11 @@ class CharInfo extends Component {
 
 export default CharInfo;
 
+CharInfo.propTypes = {
+    charId: PropTypes.number
+}
+
+
 const View = ({ char }) => {
     const { description, homepage, name, thumbnail, wiki, comics } = char;
 
@@ -114,3 +121,4 @@ const View = ({ char }) => {
         </>
     )
 }
+
