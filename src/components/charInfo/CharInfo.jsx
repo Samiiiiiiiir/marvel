@@ -1,6 +1,4 @@
-import { Component } from 'react';
-
-import './charInfo.scss';
+import { useState, useEffect } from 'react';
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -9,116 +7,106 @@ import MarvelService from '../../services/MarvelService';
 
 import PropTypes from 'prop-types';
 
-class CharInfo extends Component {
-    state = {
-        char: {},
-        status: 'skeleton'
-    }
+import './charInfo.scss';
 
-    marvelService = new MarvelService();
+const CharInfo = ({ charId }) => {
+  const [char, setChar] = useState({});
+  const [status, setStatus] = useState('skeleton');
 
-    updateChar = (id) => {
-        this.onCharLoading();
-        const { charId } = this.props;
-        if (!charId) return;
-        this.marvelService.getOneCharacter(charId)
-            .then(this.onCharLoaded)
-            .catch(this.onError)
-    }
+  const marvelService = new MarvelService();
 
-    onCharLoading = () => {
-        this.setState({ status: 'loading' });
-    }
+  useEffect(() => {
+    updateChar(charId);
+  }, [charId]);
 
-    onError = () => {
-        this.setState({ status: 'error' });
-    }
+  const updateChar = (id) => {
+    if (!id) return;
+    onCharLoading();
+    marvelService.getOneCharacter(id).then(onCharLoaded).catch(onError);
+  };
 
-    onCharLoaded = (char) => {
-        this.setState({ char, status: 'loaded' });
-    }
+  const onCharLoading = () => {
+    setStatus('loading');
+  };
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.charId != prevProps.charId) {
-            this.updateChar(this.props.charId);
-        }
-    }
+  const onError = () => {
+    setStatus('error');
+  };
 
-    render() { 
-        const { char, status } = this.state;
+  const onCharLoaded = (char) => {
+    setChar(char);
+    setStatus('loaded');
+  };
 
-        let elem = null;
+  let elem = null;
 
-        switch (status) {
-            case 'skeleton':
-                elem = <Skeleton />
-                break;
-            case 'loading':
-                elem = <Spinner />
-                break;
-            case 'error':
-                elem = <ErrorMessage />
-                break;
-            case 'loaded':
-                elem = <View char={char} />
-        }
-        
-        return (
-            <div className="char__info">
-                {elem}
-            </div>
-        )
-    }    
-}
+  switch (status) {
+    case 'skeleton':
+      elem = <Skeleton />;
+      break;
+    case 'loading':
+      elem = <Spinner />;
+      break;
+    case 'error':
+      elem = <ErrorMessage />;
+      break;
+    case 'loaded':
+      elem = <View char={char} />;
+      break;
+  }
+
+  return <div className="char__info">{elem}</div>;
+};
 
 export default CharInfo;
 
 CharInfo.propTypes = {
-    charId: PropTypes.number
-}
-
+  charId: PropTypes.number,
+};
 
 const View = ({ char }) => {
-    const { description, homepage, name, thumbnail, wiki, comics } = char;
+  const { description, homepage, name, thumbnail, wiki, comics } = char;
 
-    let imageStyles = { objectFit: 'cover' };
+  let imageStyles = { objectFit: 'cover' };
 
-    if (thumbnail == 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
-        imageStyles = { objectFit: 'contain' };
-    }
+  if (
+    thumbnail ==
+    'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
+  ) {
+    imageStyles = { objectFit: 'contain' };
+  }
 
-    return (
-        <>
-            <div className="char__basics">
-                <img src={thumbnail} alt="abyss" style={imageStyles}/>
-                <div>
-                    <div className="char__info-name">{name}</div>
-                    <div className="char__btns">
-                        <a href={homepage} className="button button__main" target="_blank">
-                            <div className="inner">homepage</div>
-                        </a>
-                        <a href={wiki} className="button button__secondary" target="_blank">
-                            <div className="inner">Wiki</div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div className="char__descr">
-                {description}
-            </div>
-            <div className="char__comics">Comics:</div>
-            <ul className="char__comics-list">
-                {(comics.length > 0) ? null : <li>There is no comics with this character.</li>}
-                {comics.map((item, i) => {
-                    if (i >= 10) return;
-                    return (
-                        <li key={i} className="char__comics-item">
-                            {item.name}
-                        </li>
-                    )
-                })}
-            </ul>
-        </>
-    )
-}
-
+  return (
+    <>
+      <div className="char__basics">
+        <img src={thumbnail} alt="abyss" style={imageStyles} />
+        <div>
+          <div className="char__info-name">{name}</div>
+          <div className="char__btns">
+            <a href={homepage} className="button button__main" target="_blank">
+              <div className="inner">homepage</div>
+            </a>
+            <a href={wiki} className="button button__secondary" target="_blank">
+              <div className="inner">Wiki</div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div className="char__descr">{description}</div>
+      <div className="char__comics">Comics:</div>
+      <ul className="char__comics-list">
+        {comics.length > 0 ? null : (
+          <li>There is no comics with this character.</li>
+        )}
+        {comics.map((item, i) => {
+          if (i >= 10) return;
+          return (
+            <li key={i} className="char__comics-item">
+              {item.name}
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  );
+};
