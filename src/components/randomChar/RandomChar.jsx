@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import MarvelService from './../../services/MarvelService';
+import useMarvelService from './../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
@@ -9,40 +9,38 @@ import mjolnir from '../../resources/img/mjolnir.png';
 
 const RandomChar = () => {
   const [char, setChar] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  const marvelService = new MarvelService();
+  const { status, getOneCharacter } = useMarvelService();
 
   useEffect(() => {
     updateChar();
   }, []);
 
   const onCharLoaded = (char) => {
-    setLoading(false);
     setChar(char);
   };
 
   const updateChar = () => {
-    setLoading(true);
     const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-    marvelService.getOneCharacter(id).then(onCharLoaded).catch(onError);
+    getOneCharacter(id).then(onCharLoaded);
   };
 
-  const onError = () => {
-    setLoading(false);
-    setError(true);
-  };
+  let elem = null;
 
-  const errorMessage = error ? <ErrorMessage /> : null;
-  const spinner = loading ? <Spinner /> : null;
-  const content = !(loading || error) ? <View char={char} /> : null;
+  switch (status) {
+    case 'loading':
+      elem = <Spinner />;
+      break;
+    case 'error':
+      elem = <ErrorMessage />;
+      break;
+    case 'loaded':
+      elem = <View char={char} />;
+      break;
+  }
 
   return (
     <div className="randomchar">
-      {errorMessage}
-      {spinner}
-      {content}
+      {elem}
       <div className="randomchar__static">
         <p className="randomchar__title">
           Random character for today!

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
@@ -8,15 +8,13 @@ import PropTypes from 'prop-types';
 
 import './charList.scss';
 
-const CharList = ({ onCharSelected }) => {
+const CharList = ({ onCharSelected, selectedChar }) => {
   const [data, setData] = useState([]);
-  const [status, setStatus] = useState('loading');
   const [newItemLoading, setNewItemLoading] = useState(false);
   const [offset, setOffset] = useState(210);
   const [charEnded, setCharEnded] = useState(false);
-  const [activeElementId, setActiveElementId] = useState(null);
 
-  const marvelService = new MarvelService();
+  const { status, getAllCharacters } = useMarvelService();
 
   useEffect(() => {
     onRequest();
@@ -24,10 +22,8 @@ const CharList = ({ onCharSelected }) => {
 
   const onRequest = (offset) => {
     setNewItemLoading(true);
-    marvelService
-      .getAllCharacters(offset)
-      .then(onCharactersLoaded)
-      .catch(onError);
+
+    getAllCharacters(offset).then(onCharactersLoaded);
   };
 
   const onCharactersLoaded = (newData) => {
@@ -37,18 +33,9 @@ const CharList = ({ onCharSelected }) => {
     }
 
     setData((charList) => [...charList, ...newData]);
-    setStatus('loaded');
     setNewItemLoading(false);
     setOffset((offset) => offset + 9);
     setCharEnded(isEnded);
-  };
-
-  const onError = () => {
-    setStatus('error');
-  };
-
-  const changeActiveElem = (id) => {
-    setActiveElementId(id);
   };
 
   const renderList = (arr) => {
@@ -65,10 +52,9 @@ const CharList = ({ onCharSelected }) => {
           tabIndex={0}
           onClick={() => {
             onCharSelected(id);
-            changeActiveElem(id);
           }}
           className={`char__item ${
-            activeElementId == id ? ' char__item_selected' : ''
+            selectedChar == id ? ' char__item_selected' : ''
           }`}
           key={id}
         >
