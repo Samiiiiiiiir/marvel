@@ -17,11 +17,11 @@ const CharList = ({ onCharSelected, selectedChar }) => {
   const { status, getAllCharacters } = useMarvelService();
 
   useEffect(() => {
-    onRequest();
+    onRequest(offset, true);
   }, []);
 
-  const onRequest = (offset) => {
-    setNewItemLoading(true);
+  const onRequest = (offset, initial) => {
+    initial ? setNewItemLoading(false) : setNewItemLoading(true);
 
     getAllCharacters(offset).then(onCharactersLoaded);
   };
@@ -68,23 +68,28 @@ const CharList = ({ onCharSelected, selectedChar }) => {
 
   let elem;
 
+  const items = renderList(data);
+
   switch (status) {
     case 'loading':
-      elem = <Spinner />;
+      if (!newItemLoading) {
+        elem = <Spinner />;
+      }
       break;
     case 'error':
       elem = <ErrorMessage />;
       break;
-    case 'loaded':
-      elem = renderList(data);
+    default:
+      elem = null;
       break;
   }
 
   return (
     <div className="char__list">
       {elem}
+      {items}
       <button
-        onClick={() => onRequest(offset)}
+        onClick={() => onRequest(offset, false)}
         className="button button__main button__long"
         disabled={newItemLoading}
         style={{ display: charEnded ? 'none' : 'block' }}

@@ -11,31 +11,20 @@ import './charInfo.scss';
 
 const CharInfo = ({ charId }) => {
   const [char, setChar] = useState({});
-  const [status, setStatus] = useState('skeleton');
 
-  const marvelService = new MarvelService();
+  const { status, getOneCharacter } = useMarvelService('skeleton');
 
   useEffect(() => {
-    updateChar(charId);
+    updateChar();
   }, [charId]);
 
-  const updateChar = (id) => {
-    if (!id) return;
-    onCharLoading();
-    marvelService.getOneCharacter(id).then(onCharLoaded).catch(onError);
-  };
-
-  const onCharLoading = () => {
-    setStatus('loading');
-  };
-
-  const onError = () => {
-    setStatus('error');
+  const updateChar = () => {
+    if (!charId) return;
+    getOneCharacter(charId).then(onCharLoaded);
   };
 
   const onCharLoaded = (char) => {
     setChar(char);
-    setStatus('loaded');
   };
 
   let elem = null;
@@ -65,6 +54,7 @@ CharInfo.propTypes = {
 };
 
 const View = ({ char }) => {
+  console.log(char);
   const { description, homepage, name, thumbnail, wiki, comics } = char;
 
   let imageStyles = { objectFit: 'cover' };
@@ -95,7 +85,7 @@ const View = ({ char }) => {
       <div className="char__descr">{description}</div>
       <div className="char__comics">Comics:</div>
       <ul className="char__comics-list">
-        {comics.length > 0 ? null : (
+        {comics.length ? null : (
           <li>There is no comics with this character.</li>
         )}
         {comics.map((item, i) => {

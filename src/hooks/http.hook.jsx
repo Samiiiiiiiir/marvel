@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-export const useHttp = (initializeStatus) => {
+export const useHttp = (initializeStatus = false) => {
   const [status, setStatus] = useState(initializeStatus);
 
   const request = useCallback(
@@ -19,8 +19,8 @@ export const useHttp = (initializeStatus) => {
           throw new Error(`Could not fetch ${url}, status: ${response.status}`);
         }
 
-        setStatus('loaded');
         const data = await response.json();
+        setStatus('loaded');
         return data;
       } catch (e) {
         setStatus('error');
