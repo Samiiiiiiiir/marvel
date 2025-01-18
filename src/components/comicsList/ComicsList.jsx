@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import useMarvelService from './../../services/MarvelService';
 
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -10,62 +10,56 @@ const ComicsList = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [firstLoading, setFirstLoading] = useState(true);
+  const [offset, setOffset] = useState(0);
 
   const { status, getAllComics } = useMarvelService();
 
   useEffect(() => {
     onRequest();
-    setFirstLoading(false);
   }, []);
 
-  const onRequest = () => {
-    getAllComics().then(onCharactersLoaded);
-    setLoading(true);
+  const onRequest = async () => {
+    try {
+      setLoading(true);
+      const res = await getAllComics(offset);
+      onComicsLoaded(res);
+    } catch (e) {}
   };
 
-  const onCharactersLoaded = (res) => {
+  const onComicsLoaded = (res) => {
     setData((state) => [...state, ...res]);
     setLoading(false);
+    setFirstLoading(false);
+    setOffset((state) => state + 8);
   };
 
-  const renderList = () => {
-    const list = data.map(({ id, thumbnail, title, price }) => {
-      return (
-        <li className="comics__item" key={id}>
-          <a href="#">
-            <img
-              src={thumbnail}
-              alt="ultimate war"
-              className="comics__item-img"
-            />
-            <div className="comics__item-name">{title}</div>
-            <div className="comics__item-price">{price}</div>
-          </a>
-        </li>
-      );
-    });
-    return <ul className="comics__grid">{list}</ul>;
-  };
-
-  let elem;
-
-  switch (status) {
-    case 'loading':
-      if (firstLoading) {
-        elem = <Spinner />;
-      }
-      break;
-    case 'error':
-      elem = <ErrorMessage />;
-      break;
-    default:
-      elem = renderList();
-      break;
-  }
+  const renderList = useCallback(
+    (arr) => {
+      const list = arr.map(({ id, thumbnail, title, price }, i) => {
+        return (
+          <li className="comics__item" key={i}>
+            <a href="#">
+              <img
+                src={thumbnail}
+                alt="ultimate war"
+                className="comics__item-img"
+              />
+              <div className="comics__item-name">{title}</div>
+              <div className="comics__item-price">{price}</div>
+            </a>
+          </li>
+        );
+      });
+      return <ul className="comics__grid">{list}</ul>;
+    },
+    [data]
+  );
 
   return (
     <div className="comics__list">
-      {elem}
+      {status == 'loading' && firstLoading ? <Spinner /> : null}
+      {status == 'error' ? <ErrorMessage /> : null}
+      {renderList(data)}
       <button
         onClick={onRequest}
         className="button button__main button__long"
