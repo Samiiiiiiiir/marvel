@@ -8,19 +8,24 @@ import './comicsList.scss';
 
 const ComicsList = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [firstLoading, setFirstLoading] = useState(true);
 
   const { status, getAllComics } = useMarvelService();
 
   useEffect(() => {
     onRequest();
+    setFirstLoading(false);
   }, []);
 
   const onRequest = () => {
     getAllComics().then(onCharactersLoaded);
+    setLoading(true);
   };
 
   const onCharactersLoaded = (res) => {
     setData((state) => [...state, ...res]);
+    setLoading(false);
   };
 
   const renderList = () => {
@@ -46,12 +51,14 @@ const ComicsList = () => {
 
   switch (status) {
     case 'loading':
-      elem = <Spinner />;
+      if (firstLoading) {
+        elem = <Spinner />;
+      }
       break;
     case 'error':
       elem = <ErrorMessage />;
       break;
-    case 'loaded':
+    default:
       elem = renderList();
       break;
   }
@@ -59,7 +66,11 @@ const ComicsList = () => {
   return (
     <div className="comics__list">
       {elem}
-      <button onClick={onRequest} className="button button__main button__long">
+      <button
+        onClick={onRequest}
+        className="button button__main button__long"
+        disabled={loading}
+      >
         <div className="inner">load more</div>
       </button>
     </div>
