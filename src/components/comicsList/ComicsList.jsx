@@ -51,7 +51,6 @@ const ComicsList = () => {
             </Link>
           </li>
         );
-        npm;
       });
       return <ul className="comics__grid">{list}</ul>;
     },
