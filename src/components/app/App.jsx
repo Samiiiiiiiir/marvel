@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import AppHeader from '../appHeader/AppHeader';
 
-import { MainPage, ComicsPage } from '../pages';
+import { MainPage, ComicsPage, NotFound } from '../pages';
 
 const App = () => {
   return (
@@ -13,6 +13,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<MainPage />} />
             <Route path="/comics" element={<ComicsPage />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
       </div>
