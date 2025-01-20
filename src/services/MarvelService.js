@@ -26,6 +26,11 @@ const useMarvelService = (initial) => {
     return res.data.results.map((item) => _transfromComics(item));
   };
 
+  const getOneComics = async (id) => {
+    const res = await request(`${_apiBase}comics/${id}?${_apiKey}`);
+    return _transfromComics(res.data.results[0]);
+  };
+
   const _transformCharacter = (res) => {
     return {
       id: res.id,
@@ -46,9 +51,17 @@ const useMarvelService = (initial) => {
       thumbnail: `${res.thumbnail.path}.${res.thumbnail.extension}`,
       title: res.title,
       price: res.prices[0].price ? `${res.prices[0].price} $` : 'Not available',
+      pageCount: res.pageCount,
+      description: res.description || 'No description',
     };
   };
-  return { status, getAllCharacters, getOneCharacter, getAllComics };
+  return {
+    status,
+    getAllCharacters,
+    getOneCharacter,
+    getAllComics,
+    getOneComics,
+  };
 };
 
 export default useMarvelService;
