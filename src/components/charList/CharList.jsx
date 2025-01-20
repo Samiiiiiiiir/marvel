@@ -21,7 +21,7 @@ const CharList = ({ onCharSelected, selectedChar }) => {
   }, []);
 
   const onRequest = (offset, initial) => {
-    initial ? setNewItemLoading(false) : setNewItemLoading(true);
+    initial ? setNewItemLoading(true) : setNewItemLoading(false);
 
     getAllCharacters(offset).then(onCharactersLoaded);
   };
@@ -66,30 +66,13 @@ const CharList = ({ onCharSelected, selectedChar }) => {
     return <ul className="char__grid">{elements}</ul>;
   };
 
-  let elem;
-
-  const items = renderList(data);
-
-  switch (status) {
-    case 'loading':
-      if (!newItemLoading) {
-        elem = <Spinner />;
-      }
-      break;
-    case 'error':
-      elem = <ErrorMessage />;
-      break;
-    default:
-      elem = null;
-      break;
-  }
-
   return (
     <div className="char__list">
-      {elem}
-      {items}
+      {status === 'loading' ? <Spinner /> : null}
+      {status === 'error' ? <ErrorMessage /> : null}
+      {renderList(data)}
       <button
-        onClick={() => onRequest(offset, false)}
+        onClick={() => onRequest(offset, true)}
         className="button button__main button__long"
         disabled={newItemLoading}
         style={{ display: charEnded ? 'none' : 'block' }}
