@@ -6,6 +6,8 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import PropTypes from 'prop-types';
 
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
+
 import './charList.scss';
 
 const CharList = ({ onCharSelected, selectedChar }) => {
@@ -39,31 +41,42 @@ const CharList = ({ onCharSelected, selectedChar }) => {
   };
 
   const renderList = (arr) => {
-    const elements = arr.map(({ thumbnail, name, id }) => {
-      let styles = { objectFit: 'cover' };
-      if (
-        thumbnail ==
-        'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
-      ) {
-        styles = { objectFit: 'contain' };
-      }
-      return (
-        <li
-          tabIndex={0}
-          onClick={() => {
-            onCharSelected(id);
-          }}
-          className={`char__item ${
-            selectedChar == id ? ' char__item_selected' : ''
-          }`}
-          key={id}
-        >
-          <img src={thumbnail} alt="abyss" style={styles} />
-          <div className="char__name">{name}</div>
-        </li>
-      );
-    });
-    return <ul className="char__grid">{elements}</ul>;
+    const elements = (
+      <TransitionGroup component={'ul'} className="char__grid">
+        {arr.map(({ thumbnail, name, id, nodeRef }) => {
+          let styles = { objectFit: 'cover' };
+          if (
+            thumbnail ==
+            'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
+          ) {
+            styles = { objectFit: 'contain' };
+          }
+          return (
+            <CSSTransition
+              key={id}
+              nodeRef={nodeRef}
+              timeout={500}
+              classNames="character-item"
+            >
+              <li
+                tabIndex={0}
+                onClick={() => {
+                  onCharSelected(id);
+                }}
+                className={`char__item ${
+                  selectedChar == id ? ' char__item_selected' : ''
+                }`}
+                ref={nodeRef}
+              >
+                <img src={thumbnail} alt="abyss" style={styles} />
+                <div className="char__name">{name}</div>
+              </li>
+            </CSSTransition>
+          );
+        })}
+      </TransitionGroup>
+    );
+    return elements;
   };
 
   return (

@@ -49,7 +49,7 @@ const ComicsList = () => {
                 key={i}
                 nodeRef={nodeRef}
               >
-                <li className="comics__item">
+                <li className="comics__item" ref={nodeRef}>
                   <Link to={`/comics/${id}`}>
                     <img
                       src={thumbnail}
