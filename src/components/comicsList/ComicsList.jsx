@@ -1,10 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, createRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import useMarvelService from './../../services/MarvelService';
 
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
+
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import './comicsList.scss';
 
@@ -37,22 +39,34 @@ const ComicsList = () => {
 
   const renderList = useCallback(
     (arr) => {
-      const list = arr.map(({ id, thumbnail, title, price }, i) => {
-        return (
-          <li className="comics__item" key={i}>
-            <Link to={`/comics/${id}`}>
-              <img
-                src={thumbnail}
-                alt="ultimate war"
-                className="comics__item-img"
-              />
-              <div className="comics__item-name">{title}</div>
-              <div className="comics__item-price">{price}</div>
-            </Link>
-          </li>
-        );
-      });
-      return <ul className="comics__grid">{list}</ul>;
+      const list = (
+        <TransitionGroup component={'ul'} className="comics__grid">
+          {arr.map(({ id, thumbnail, title, price }, i) => {
+            // const nodeRef = createRef(null);
+            return (
+              <CSSTransition
+                timeout={500}
+                classNames="comics-item"
+                key={i}
+                // nodeRef={nodeRef}
+              >
+                <li className="comics__item">
+                  <Link to={`/comics/${id}`}>
+                    <img
+                      src={thumbnail}
+                      alt="ultimate war"
+                      className="comics__item-img"
+                    />
+                    <div className="comics__item-name">{title}</div>
+                    <div className="comics__item-price">{price}</div>
+                  </Link>
+                </li>
+              </CSSTransition>
+            );
+          })}
+        </TransitionGroup>
+      );
+      return list;
     },
     [data]
   );
