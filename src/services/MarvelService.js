@@ -1,3 +1,4 @@
+import { createRef } from 'react';
 import { useHttp } from '../hooks/http.hook';
 
 const useMarvelService = (initial) => {
@@ -42,6 +43,7 @@ const useMarvelService = (initial) => {
       homepage: res.urls[0].url,
       wiki: res.urls[1].url,
       comics: res.comics.items,
+      nodeRef: createRef(null),
     };
   };
 
@@ -53,6 +55,7 @@ const useMarvelService = (initial) => {
       price: res.prices[0].price ? `${res.prices[0].price} $` : 'Not available',
       pageCount: res.pageCount,
       description: res.description || 'No description',
+      nodeRef: createRef(null),
     };
   };
   return {

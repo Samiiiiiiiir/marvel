@@ -41,14 +41,13 @@ const ComicsList = () => {
     (arr) => {
       const list = (
         <TransitionGroup component={'ul'} className="comics__grid">
-          {arr.map(({ id, thumbnail, title, price }, i) => {
-            // const nodeRef = createRef(null);
+          {arr.map(({ id, thumbnail, title, price, nodeRef }, i) => {
             return (
               <CSSTransition
                 timeout={500}
                 classNames="comics-item"
                 key={i}
-                // nodeRef={nodeRef}
+                nodeRef={nodeRef}
               >
                 <li className="comics__item">
                   <Link to={`/comics/${id}`}>
