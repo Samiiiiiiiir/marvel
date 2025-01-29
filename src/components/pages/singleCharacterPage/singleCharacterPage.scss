@@ -1,0 +1,32 @@
+@import '../../../style/variables.scss';
+
+.single-char {
+  display: flex;
+  gap: 50px;
+  &__desc {
+    display: inline-flex;
+    flex-direction: column;
+    row-gap: 25px;
+  }
+  &__name {
+    font-weight: 700;
+    font-size: 22px;
+    color: #000;
+  }
+  &__text {
+    font-weight: 400;
+    font-size: 18px;
+    color: #000;
+  }
+  &__back {
+    align-self: flex-start;
+    color: #fff;
+    padding: 10px;
+    background-color: $main-color;
+    transition-duration: 0.25s;
+    &:hover {
+      opacity: 0.8;
+      color: #fff;
+    }
+  }
+}
