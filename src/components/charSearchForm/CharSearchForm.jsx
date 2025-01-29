@@ -8,12 +8,13 @@ import { Link } from 'react-router-dom';
 import './charSearchForm.scss';
 
 const CharSearchForm = () => {
+  const [char, setChar] = useState(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const [char, setChar] = useState(null);
 
   const { status, getCharacterByName } = useMarvelService();
 
@@ -22,11 +23,7 @@ const CharSearchForm = () => {
   };
 
   const onLoaded = (char) => {
-    if (char.length) {
-      setChar(char[0]);
-    } else {
-      setChar('error');
-    }
+    setChar(char);
   };
 
   return (
@@ -52,25 +49,30 @@ const CharSearchForm = () => {
         <div className="char-search__error">{errors.charName.message}</div>
       ) : null}
       {status === 'loading' ? <div>Loading...</div> : null}
-      {char == 'error' || status === 'error' ? (
+      {(char && char.length == 0) || status === 'error' ? (
         <div className="char-search__error">
           The character was not found. Check the name and try again
         </div>
       ) : null}
-      {typeof char == 'object' && status === 'loaded' ? (
-        <div className="char-search__info">
-          <h2 className="char-search__info-text">
-            There is! Visit {char.name} page?
-          </h2>
-          <Link
-            to={`/characters/${char.id}`}
-            className="char-search__info-button button button__secondary"
-          >
-            <div className="inner">TO PAGE</div>
-          </Link>
-        </div>
+      {char && char.length > 0 && status === 'loaded' ? (
+        <View char={char} />
       ) : null}
     </form>
+  );
+};
+
+const View = ({ char }) => {
+  const { name, id } = char[0];
+  return (
+    <div className="char-search__info">
+      <h2 className="char-search__info-text">There is! Visit {name} page?</h2>
+      <Link
+        to={`/characters/${id}`}
+        className="char-search__info-button button button__secondary"
+      >
+        <div className="inner">TO PAGE</div>
+      </Link>
+    </div>
   );
 };
 

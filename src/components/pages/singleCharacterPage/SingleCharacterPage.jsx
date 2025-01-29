@@ -1,36 +1,9 @@
-import { useEffect, useState } from 'react';
-
-import { useParams, Link } from 'react-router-dom';
-import useMarvelService from '../../../services/MarvelService';
-import Spinner from '../../spinner/Spinner';
-import ErrorMessage from '../../errorMessage/ErrorMessage';
+import { Link } from 'react-router-dom';
 
 import './singleCharacterPage.scss';
 
-const SingleCharacterPage = () => {
-  const { characterId } = useParams();
-  const { status, getOneCharacter } = useMarvelService();
-  const [char, setChar] = useState();
-
-  useEffect(() => {
-    getOneCharacter(characterId).then(onLoaded);
-  }, []);
-
-  const onLoaded = (res) => {
-    setChar(res);
-  };
-
-  return (
-    <>
-      {status == 'loading' ? <Spinner /> : null}
-      {status == 'error' ? <ErrorMessage /> : null}
-      {status == 'loaded' ? <View char={char} /> : null}
-    </>
-  );
-};
-
-const View = ({ char }) => {
-  const { name, thumbnail, description } = char;
+const SingleCharacterPage = ({ data }) => {
+  const { name, thumbnail, description } = data;
   return (
     <div className="single-char">
       <img

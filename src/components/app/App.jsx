@@ -7,6 +7,7 @@ import AppHeader from '../appHeader/AppHeader';
 const NotFound = lazy(() => import('../pages/404'));
 const MainPage = lazy(() => import('../pages/MainPage'));
 const ComicsPage = lazy(() => import('../pages/ComicsPage'));
+const SinglePage = lazy(() => import('../pages/SinglePage'));
 const SingleComicPage = lazy(() =>
   import('../pages/singleComicPage/SingleComicPage')
 );
@@ -24,10 +25,20 @@ const App = () => {
             <Routes>
               <Route path="/" element={<MainPage />} />
               <Route path="/comics" element={<ComicsPage />} />
-              <Route path="/comics/:comicId" element={<SingleComicPage />} />
               <Route
-                path="/characters/:characterId"
-                element={<SingleCharacterPage />}
+                path="/comics/:id"
+                element={
+                  <SinglePage Component={SingleComicPage} dataType="comics" />
+                }
+              />
+              <Route
+                path="/characters/:id"
+                element={
+                  <SinglePage
+                    Component={SingleCharacterPage}
+                    dataType="character"
+                  />
+                }
               />
               <Route path="*" element={<NotFound />} />
             </Routes>
