@@ -54,9 +54,7 @@ const CharSearchForm = () => {
           The character was not found. Check the name and try again
         </div>
       ) : null}
-      {char && char.length > 0 && status === 'loaded' ? (
-        <View char={char} />
-      ) : null}
+      {char && char.length > 0 ? <View char={char} /> : null}
     </form>
   );
 };
