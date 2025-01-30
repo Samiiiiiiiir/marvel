@@ -12,30 +12,26 @@ import './charList.scss';
 
 const CharList = ({ onCharSelected, selectedChar }) => {
   const [data, setData] = useState([]);
-  const [newItemLoading, setNewItemLoading] = useState(false);
+  const [firstLoading, setFirstLoading] = useState(true);
   const [offset, setOffset] = useState(210);
   const [charEnded, setCharEnded] = useState(false);
 
   const { status, getAllCharacters } = useMarvelService();
 
   useEffect(() => {
-    onRequest(offset, true);
+    onRequest(offset);
   }, []);
 
-  const onRequest = (offset, initial) => {
-    initial ? setNewItemLoading(true) : setNewItemLoading(false);
-
+  const onRequest = (offset) => {
     getAllCharacters(offset).then(onCharactersLoaded);
   };
 
   const onCharactersLoaded = (newData) => {
-    let isEnded = false;
-    if (newData.length < 9) {
-      isEnded = true;
+    let isEnded = newData.length < 9 ? true : false;
+    if (firstLoading) {
+      setFirstLoading(false);
     }
-
     setData((charList) => [...charList, ...newData]);
-    setNewItemLoading(false);
     setOffset((offset) => offset + 9);
     setCharEnded(isEnded);
   };
@@ -44,13 +40,11 @@ const CharList = ({ onCharSelected, selectedChar }) => {
     const elements = (
       <TransitionGroup component={'ul'} className="char__grid">
         {arr.map(({ thumbnail, name, id, nodeRef }) => {
-          let styles = { objectFit: 'cover' };
-          if (
+          const styles =
             thumbnail ==
             'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
-          ) {
-            styles = { objectFit: 'contain' };
-          }
+              ? { objectFit: 'contain' }
+              : { objectFit: 'cover' };
           return (
             <CSSTransition
               key={id}
@@ -81,13 +75,13 @@ const CharList = ({ onCharSelected, selectedChar }) => {
 
   return (
     <div className="char__list">
-      {status === 'loading' ? <Spinner /> : null}
       {status === 'error' ? <ErrorMessage /> : null}
       {renderList(data)}
+      {status === 'loading' && firstLoading ? <Spinner /> : null}
       <button
-        onClick={() => onRequest(offset, true)}
+        onClick={() => onRequest(offset)}
         className="button button__main button__long"
-        disabled={newItemLoading}
+        disabled={status === 'loading' ? true : false}
         style={{ display: charEnded ? 'none' : 'block' }}
       >
         <div className="inner">load more</div>

@@ -24,23 +24,11 @@ const RandomChar = () => {
     getOneCharacter(id).then(onCharLoaded);
   };
 
-  let elem = null;
-
-  switch (status) {
-    case 'loading':
-      elem = <Spinner />;
-      break;
-    case 'error':
-      elem = <ErrorMessage />;
-      break;
-    case 'loaded':
-      elem = <View char={char} />;
-      break;
-  }
-
   return (
     <div className="randomchar">
-      {elem}
+      {status == 'loading' ? <Spinner /> : null}
+      {status == 'error' ? <ErrorMessage /> : null}
+      {status == 'loaded' ? <View char={char} /> : null}
       <div className="randomchar__static">
         <p className="randomchar__title">
           Random character for today!

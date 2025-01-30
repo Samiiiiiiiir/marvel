@@ -27,44 +27,24 @@ const CharInfo = ({ charId }) => {
     setChar(char);
   };
 
-  let elem = null;
-
-  switch (status) {
-    case 'skeleton':
-      elem = <Skeleton />;
-      break;
-    case 'loading':
-      elem = <Spinner />;
-      break;
-    case 'error':
-      elem = <ErrorMessage />;
-      break;
-    case 'loaded':
-      elem = <View char={char} />;
-      break;
-  }
-
-  return <div className="char__info">{elem}</div>;
-};
-
-export default CharInfo;
-
-CharInfo.propTypes = {
-  charId: PropTypes.number,
+  return (
+    <div className="char__info">
+      {status == 'skeleton' ? <Skeleton /> : null}
+      {status == 'loading' ? <Spinner /> : null}
+      {status == 'error' ? <ErrorMessage /> : null}
+      {status == 'loaded' ? <View char={char} /> : null}
+    </div>
+  );
 };
 
 const View = ({ char }) => {
-  console.log(char);
   const { description, homepage, name, thumbnail, wiki, comics } = char;
 
-  let imageStyles = { objectFit: 'cover' };
-
-  if (
+  let imageStyles =
     thumbnail ==
     'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
-  ) {
-    imageStyles = { objectFit: 'contain' };
-  }
+      ? { objectFit: 'contain' }
+      : { objectFit: 'cover' };
 
   return (
     <>
@@ -100,3 +80,9 @@ const View = ({ char }) => {
     </>
   );
 };
+
+CharInfo.propTypes = {
+  charId: PropTypes.number,
+};
+
+export default CharInfo;

@@ -12,7 +12,6 @@ import './comicsList.scss';
 
 const ComicsList = () => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [firstLoading, setFirstLoading] = useState(true);
   const [offset, setOffset] = useState(0);
 
@@ -24,16 +23,18 @@ const ComicsList = () => {
 
   const onRequest = async () => {
     try {
-      setLoading(true);
       const res = await getAllComics(offset);
       onComicsLoaded(res);
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const onComicsLoaded = (res) => {
     setData((state) => [...state, ...res]);
-    setLoading(false);
-    setFirstLoading(false);
+    if (firstLoading) {
+      setFirstLoading(false);
+    }
     setOffset((state) => state + 8);
   };
 
@@ -78,7 +79,7 @@ const ComicsList = () => {
       <button
         onClick={onRequest}
         className="button button__main button__long"
-        disabled={loading}
+        disabled={status == 'loading' ? true : false}
       >
         <div className="inner">load more</div>
       </button>

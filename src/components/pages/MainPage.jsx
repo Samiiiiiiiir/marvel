@@ -14,7 +14,7 @@ const MainPage = () => {
   const onCharSelected = (id) => {
     setSelectedChar(id);
   };
-  Helmet;
+
   return (
     <>
       <Helmet>

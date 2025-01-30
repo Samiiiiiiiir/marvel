@@ -11,7 +11,6 @@ const SinglePage = ({ Component, dataType }) => {
   const [data, setData] = useState();
 
   const { id } = useParams();
-
   const { status, getOneComics, getOneCharacter } = useMarvelService();
 
   useEffect(() => {
